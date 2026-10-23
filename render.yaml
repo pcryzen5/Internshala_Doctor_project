@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: clinical-scribe
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: standard
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: WHISPER_MODEL
+        value: small.en
+      - key: WHISPER_DEVICE
+        value: cpu
+      - key: WHISPER_COMPUTE_TYPE
+        value: int8
+      - key: LLM_PROVIDER
+        value: mock
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: AUTH_DISABLED
+        value: "true"
+      - key: DATABASE_URL
+        value: sqlite+aiosqlite:///./clinical_transcription.db

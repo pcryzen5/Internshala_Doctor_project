@@ -1,15 +1,15 @@
 services:
-  backend:
+  app:
     build:
-      context: ./backend
+      context: .
       dockerfile: Dockerfile
-    container_name: clinical-transcription-backend
+    container_name: clinical-scribe-app
     ports:
       - "8000:8000"
     environment:
-      - ENVIRONMENT=development
+      - ENVIRONMENT=production
       - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/clinical_transcription
-      - CORS_ORIGINS=["http://localhost:5173","http://localhost:3000"]
+      - CORS_ORIGINS=["http://localhost:8000","http://127.0.0.1:8000"]
       - WHISPER_MODEL=small.en
       - WHISPER_DEVICE=cpu
       - WHISPER_COMPUTE_TYPE=int8
@@ -17,28 +17,14 @@ services:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
       - AUTH_DISABLED=true
     volumes:
-      - ./backend:/app
-      - audio_data:/app/audio_storage
+      - audio_data:/app/backend/audio_storage
     depends_on:
       db:
         condition: service_healthy
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: clinical-transcription-frontend
-    ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    environment:
-      - VITE_API_URL=http://localhost:8000
-
   db:
     image: postgres:15-alpine
-    container_name: clinical-transcription-db
+    container_name: clinical-scribe-db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres

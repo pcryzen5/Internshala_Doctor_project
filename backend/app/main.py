@@ -73,7 +73,35 @@ def create_app() -> FastAPI:
             "db": "ok",
         }
 
+    # Serve built frontend static files if present (for single container deployment)
+    import os
+    from starlette.responses import FileResponse
+    from fastapi.staticfiles import StaticFiles
+
+    frontend_dist = os.getenv("FRONTEND_DIST") or os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "static")
+    )
+    if not os.path.exists(frontend_dist):
+        dev_dist = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "dist")
+        )
+        if os.path.exists(dev_dist):
+            frontend_dist = dev_dist
+
+    if os.path.exists(frontend_dist) and os.path.isdir(frontend_dist):
+        assets_dir = os.path.join(frontend_dist, "assets")
+        if os.path.exists(assets_dir):
+            app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
+        @app.get("/{full_path:path}", include_in_schema=False)
+        async def serve_spa(full_path: str) -> FileResponse:
+            target = os.path.join(frontend_dist, full_path)
+            if full_path and os.path.exists(target) and os.path.isfile(target):
+                return FileResponse(target)
+            return FileResponse(os.path.join(frontend_dist, "index.html"))
+
     return app
 
 
 app = create_app()
+

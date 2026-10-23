@@ -14,3 +14,13 @@ async def test_health_check() -> None:
         assert response.status_code == 200
         data = response.json()
         assert data == {"status": "ok", "asr": "ready", "db": "ok"}
+
+
+@pytest.mark.asyncio
+async def test_frontend_spa_serving() -> None:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.get("/")
+        assert response.status_code == 200
+        assert "<!doctype html>" in response.text.lower() or "<html" in response.text.lower()
+
