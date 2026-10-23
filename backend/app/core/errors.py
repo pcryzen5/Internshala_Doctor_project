@@ -35,11 +35,7 @@ class NotFoundError(AppError):
 
 
 class ValidationError(AppError):
-    status_code = (
-        status.HTTP_422_UNPROCESSABLE_ENTITY
-        if hasattr(status, "HTTP_422_UNPROCESSABLE_CONTENT")
-        else 422
-    )
+    status_code = getattr(status, "HTTP_422_UNPROCESSABLE_CONTENT", 422)
     code = "validation_error"
 
 
@@ -77,7 +73,7 @@ def register_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(RequestValidationError)
     async def validation_error_handler(_: Request, exc: RequestValidationError) -> JSONResponse:
         return JSONResponse(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=getattr(status, "HTTP_422_UNPROCESSABLE_CONTENT", 422),
             content={
                 "error": {
                     "code": "validation_error",

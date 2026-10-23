@@ -2,9 +2,13 @@
 
 from fastapi import APIRouter
 
+from app.api.v1.analyze import router as analyze_router
+from app.api.v1.export import router as export_router
 from app.api.v1.sessions import router as sessions_router
 from app.api.v1.transcribe import router as transcribe_router
 
 api_v1_router = APIRouter(prefix="/api/v1")
 api_v1_router.include_router(sessions_router)
 api_v1_router.include_router(transcribe_router)
+api_v1_router.include_router(analyze_router)
+api_v1_router.include_router(export_router)

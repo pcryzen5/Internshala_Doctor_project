@@ -8,32 +8,8 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 from starlette.testclient import TestClient
 
-from app.api.deps import get_asr_service
 from app.main import app
-from app.services.asr import ASRService, TranscribeResult
 from tests.test_asr import create_sine_wav
-
-
-class MockASRService(ASRService):
-    """Hermetic mock for ASR in integration tests."""
-
-    async def transcribe(
-        self, audio_array: np.ndarray, sample_rate: int = 16000
-    ) -> TranscribeResult:
-        return TranscribeResult(
-            text="I have had fever since two days",
-            start_ms=100,
-            end_ms=1500,
-            confidence=0.94,
-            is_hallucination=False,
-        )
-
-
-@pytest.fixture(autouse=True)
-def override_asr() -> None:
-    app.dependency_overrides[get_asr_service] = lambda: MockASRService()
-    yield
-    app.dependency_overrides.clear()
 
 
 @pytest.mark.asyncio
