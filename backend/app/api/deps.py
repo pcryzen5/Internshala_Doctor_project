@@ -8,7 +8,12 @@ from app.db.repositories.summary_repo import SummaryRepository
 from app.db.repositories.transcript_repo import TranscriptRepository
 from app.db.repositories.user_repo import UserRepository
 from app.db.session import get_db
+from app.services.asr import ASRService
 from app.services.sessions import SessionService
+
+
+def get_asr_service() -> ASRService:
+    return ASRService.get_instance()
 
 
 def get_user_repository(db: AsyncSession = Depends(get_db)) -> UserRepository:

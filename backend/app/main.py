@@ -3,15 +3,19 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from typing import Any
+from uuid import UUID
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.deps import get_asr_service
 from app.api.v1 import api_v1_router
+from app.api.v1.transcribe import handle_audio_websocket
 from app.core.config import settings
 from app.core.errors import register_error_handlers
 from app.core.logging import setup_logging
 from app.db.session import Base, engine
+from app.services.asr import ASRService
 
 
 @asynccontextmanager
@@ -51,6 +55,14 @@ def create_app() -> FastAPI:
 
     # Include API routers
     app.include_router(api_v1_router)
+
+    @app.websocket("/ws/sessions/{session_id}/audio")
+    async def audio_websocket(
+        websocket: WebSocket,
+        session_id: UUID,
+        asr_svc: ASRService = Depends(get_asr_service),
+    ) -> None:
+        await handle_audio_websocket(websocket, session_id, asr_svc)
 
     @app.get("/health", tags=["System"])
     async def health() -> dict[str, Any]:
