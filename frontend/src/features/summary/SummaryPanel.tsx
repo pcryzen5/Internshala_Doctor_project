@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useSessionStore } from '../../store/sessionStore';
 import { useSummaryStore } from '../../store/summaryStore';
+import { SymptomItem, MedicationItem, AllergyItem } from '../../lib/types';
 import './SummaryPanel.css';
 
 interface SummaryPanelProps {
@@ -187,7 +188,7 @@ export const SummaryPanel: React.FC<SummaryPanelProps> = ({ onClear }) => {
                 <div className="symptom-subgroup">
                   <span className="subgroup-title">Present (+)</span>
                   <div className="chips-wrap">
-                    {summary?.symptoms.positive.map((s, i) => (
+                    {summary?.symptoms.positive.map((s: SymptomItem, i: number) => (
                       <span key={i} className="chip chip-positive" title={s.evidence}>
                         + {s.name}
                       </span>
@@ -199,7 +200,7 @@ export const SummaryPanel: React.FC<SummaryPanelProps> = ({ onClear }) => {
                 <div className="symptom-subgroup">
                   <span className="subgroup-title">Absent / Denied (−)</span>
                   <div className="chips-wrap">
-                    {summary?.symptoms.negative.map((s, i) => (
+                    {summary?.symptoms.negative.map((s: SymptomItem, i: number) => (
                       <span key={i} className="chip chip-negative" title={s.evidence}>
                         − {s.name}
                       </span>
@@ -224,7 +225,7 @@ export const SummaryPanel: React.FC<SummaryPanelProps> = ({ onClear }) => {
               <p className="impression-provisional">{summary.assessment.provisional}</p>
               {summary.assessment.differentials?.length > 0 && (
                 <div className="differentials-row">
-                  {summary.assessment.differentials.map((d, i) => (
+                  {summary.assessment.differentials.map((d: string, i: number) => (
                     <span key={i} className="diff-chip">
                       Diff: {d}
                     </span>
@@ -245,7 +246,7 @@ export const SummaryPanel: React.FC<SummaryPanelProps> = ({ onClear }) => {
           </div>
           {summary?.medications?.length ? (
             <div className="item-list">
-              {summary.medications.map((m, i) => (
+              {summary.medications.map((m: MedicationItem, i: number) => (
                 <div key={i} className="medication-card">
                   <div className="med-header">
                     <span className="med-name">
@@ -305,7 +306,7 @@ export const SummaryPanel: React.FC<SummaryPanelProps> = ({ onClear }) => {
               </div>
               {summary.observations.examination?.length ? (
                 <ul className="observations-list">
-                  {summary.observations.examination.map((ex, i) => (
+                  {summary.observations.examination.map((ex: string, i: number) => (
                     <li key={i}>{ex}</li>
                   ))}
                 </ul>
@@ -324,7 +325,7 @@ export const SummaryPanel: React.FC<SummaryPanelProps> = ({ onClear }) => {
           </div>
           {summary?.allergies?.length ? (
             <div className="item-list">
-              {summary.allergies.map((a, i) => (
+              {summary.allergies.map((a: AllergyItem, i: number) => (
                 <div key={i} className="allergy-card">
                   <div className="allergy-header">
                     <span className="allergy-name">
@@ -350,12 +351,12 @@ export const SummaryPanel: React.FC<SummaryPanelProps> = ({ onClear }) => {
           {summary?.past_medical_history?.conditions?.length ||
           summary?.past_medical_history?.surgeries?.length ? (
             <div className="chips-wrap">
-              {summary.past_medical_history.conditions?.map((c, i) => (
+              {summary.past_medical_history.conditions?.map((c: string, i: number) => (
                 <span key={i} className="chip">
                   <ClipboardList size={12} /> {c}
                 </span>
               ))}
-              {summary.past_medical_history.surgeries?.map((s, i) => (
+              {summary.past_medical_history.surgeries?.map((s: string, i: number) => (
                 <span key={i} className="chip">
                   Surgery: {s}
                 </span>
